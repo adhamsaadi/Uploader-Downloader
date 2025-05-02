@@ -1,4 +1,8 @@
 <!DOCTYPE html>
+<?php
+session_start();
+$isLoggedIn = isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true;
+?>
 <html>
 <head>
     <title>Downloader</title>
@@ -49,11 +53,17 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="header">File Downloader</h1>
-
-        <?php
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 class="header mb-0">File Downloader</h1>
+            <?php if ($isLoggedIn): ?>
+                <a href="logout.php" class="btn btn-secondary">Logout</a>
+            <?php else: ?>
+                <a href="login.php" class="btn btn-primary">Login</a>
+            <?php endif; ?>
+        </div>
+        <?php       
         // Specify the directory to scan
-        $directory = '/home/vol19_1/hstn.me/mseet_35444429/htdocs/upload/uploads/';
+        $directory = '/home/vol18_2/infinityfree.com/if0_38888521/htdocs/upload/uploads/';
 
         // Initialize an array to store the file names and sizes
         $fileList = [];
@@ -94,7 +104,18 @@
                 $fileUrl = urlencode($fileName); // Encode the file name for the URL
 
                 // Generate the download link
-                echo "<li><a href='download.php?file=$fileUrl'>$fileName</a> ($fileSize)</li>";
+                echo "<li>
+                    <a href='download.php?file=$fileUrl'>" . htmlspecialchars($fileName) . "</a> ($fileSize)";
+                    
+                if ($isLoggedIn) {
+                    echo " <a href='delete.php?file=$fileUrl' 
+                            class='btn btn-sm btn-danger ml-2' 
+                            onclick=\"return confirm('Are you sure you want to delete $fileName?');\">
+                            Delete
+                        </a>";
+                }
+
+                echo "</li>";
             }
             echo "</ul>";
         } else {
