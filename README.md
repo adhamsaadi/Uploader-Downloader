@@ -12,7 +12,7 @@ This is a simple web application featuring both a file uploader and a file downl
 - File Downloader:
   - List files stored in a specified directory.
   - Generate download links for each file.
-  - Inform users if no files are found in the directory.
+  - Login feature that enable the deletion option.
 
 ## Technologies Used
 
@@ -20,6 +20,7 @@ This is a simple web application featuring both a file uploader and a file downl
 - CSS (Bootstrap)
 - JavaScript (jQuery)
 - PHP (for server-side functionality)
+- SQL (using PHP-MyAdmin)
 
 ## Demo GIF
 <div align="center">
