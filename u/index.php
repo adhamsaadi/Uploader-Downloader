@@ -33,12 +33,11 @@ $isLoggedIn = isset($_SESSION['authenticated']) && $_SESSION['authenticated'] ==
         }
 
         .file-list li {
-            font-size: 24px;
+            font-size: 20px;
             margin-bottom: 10px;
         }
 
         .file-list li a {
-            color: #007bff;
             text-decoration: none;
         }
 
@@ -49,6 +48,28 @@ $isLoggedIn = isset($_SESSION['authenticated']) && $_SESSION['authenticated'] ==
         .alert-info {
             margin-top: 20px;
         }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border: none;
+            border-radius: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+
+        .delete-all {
+            margin-bottom: 20px;
+        }
+
+        .logout-group {
+            display: flex;
+            gap: 10px;
+        }
     </style>
 </head>
 <body>
@@ -56,27 +77,27 @@ $isLoggedIn = isset($_SESSION['authenticated']) && $_SESSION['authenticated'] ==
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h1 class="header mb-0">File Downloader</h1>
             <?php if ($isLoggedIn): ?>
-                <a href="logout.php" class="btn btn-secondary">Logout</a>
+                <div class="logout-group">
+                    <a href="delete_all.php" class="btn btn-danger" style="color: white;" onclick="return confirm('Are you sure you want to delete ALL files?');">Delete All</a>
+                    <a href="logout.php" class="btn btn-secondary">Logout</a>
+                </div>
             <?php else: ?>
                 <a href="login.php" class="btn btn-primary">Login</a>
             <?php endif; ?>
         </div>
-        <?php       
-        // Specify the directory to scan
-        $directory = '/home/vol18_2/infinityfree.com/if0_38888521/htdocs/upload/uploads/';
 
-        // Initialize an array to store the file names and sizes
+        <?php if ($isLoggedIn && !empty($_GET['message']) && $_GET['message'] == 'deleted_all'): ?>
+            <div class="alert alert-success">All files have been deleted successfully.</div>
+        <?php endif; ?>
+
+        <?php
+        $directory = '/home/vol18_2/infinityfree.com/if0_38888521/htdocs/upload/uploads/';
         $fileList = [];
 
-        // Check if the directory exists
         if (is_dir($directory)) {
-            // Open the directory
             if ($handle = opendir($directory)) {
-                // Read directory contents
                 while (($file = readdir($handle)) !== false) {
-                    // Exclude current and parent directory entries
                     if ($file != "." && $file != "..") {
-                        // Add the file name and size to the file list array
                         $filePath = $directory . $file;
                         $fileSize = filesize($filePath);
                         $fileList[] = [
@@ -85,36 +106,25 @@ $isLoggedIn = isset($_SESSION['authenticated']) && $_SESSION['authenticated'] ==
                         ];
                     }
                 }
-                // Close the directory
                 closedir($handle);
 
-                // Sort the file list alphabetically by name
                 usort($fileList, function ($a, $b) {
                     return strtolower($a['name']) <=> strtolower($b['name']);
                 });
             }
         }
 
-        // Display the file list with download links
         if (!empty($fileList)) {
             echo "<ul class='file-list'>";
             foreach ($fileList as $file) {
                 $fileName = $file['name'];
                 $fileSize = formatFileSize($file['size']);
-                $fileUrl = urlencode($fileName); // Encode the file name for the URL
+                $fileUrl = urlencode($fileName);
 
-                // Generate the download link
-                echo "<li>
-                    <a href='download.php?file=$fileUrl'>" . htmlspecialchars($fileName) . "</a> ($fileSize)";
-                    
+                echo "<li><a href='download.php?file=$fileUrl'>" . htmlspecialchars($fileName) . "</a> ($fileSize)";
                 if ($isLoggedIn) {
-                    echo " <a href='delete.php?file=$fileUrl' 
-                            class='btn btn-sm btn-danger ml-2' 
-                            onclick=\"return confirm('Are you sure you want to delete $fileName?');\">
-                            Delete
-                        </a>";
+                    echo " <a href='delete.php?file=$fileUrl' class='btn btn-delete ml-2' onclick=\"return confirm('Are you sure you want to delete $fileName?');\">Delete</a>";
                 }
-
                 echo "</li>";
             }
             echo "</ul>";
@@ -122,7 +132,6 @@ $isLoggedIn = isset($_SESSION['authenticated']) && $_SESSION['authenticated'] ==
             echo "<div class='alert alert-info'>No files found in the directory.</div>";
         }
 
-        // Function to format file size in a human-readable format
         function formatFileSize($size)
         {
             $units = ['B', 'KB', 'MB', 'GB', 'TB'];

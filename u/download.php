@@ -5,7 +5,7 @@ if (isset($_GET['file'])) {
     $file = $_GET['file'];
 
     // Specify the directory path where the files are stored
-    $directory = '/home/vol19_1/hstn.me/mseet_35444429/htdocs/upload/uploads/';
+    $directory = '/home/vol18_2/infinityfree.com/if0_38888521/htdocs/upload/uploads/';
 
     // Specify the path to the file
     $filePath = $directory . $file;
